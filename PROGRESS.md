@@ -3,86 +3,64 @@
 > Single source of truth for "where are we?" across sessions. Update this before
 > ending any session. Newest status at top.
 
-_Last updated: 2026-05-25 — Milestone 2 (client approve / request-changes) built; typecheck + lint + build green; still needs Supabase keys for live render._
+_Last updated: 2026-05-25 — full product built (client + freelancer sides); project MOVED off OneDrive to E:\ancilar\teamsync; dev server verified working there._
 
 ---
 
-## Status
+## ⚠️ IMPORTANT — project location changed
 
-🟢 **Milestone 1 (read-only client view) built and compiling.** The client page at
-`/c/[token]` renders status, progress, the update feed, and approval items.
+The live working copy is now **`E:\ancilar\teamsync`** (off OneDrive). OneDrive was
+locking Next.js's `.next` files and breaking/​slowing the dev server. The old copy at
+`C:\Users\…\OneDrive\Desktop\New folder\teamsync` is **stale — do not use it**; it
+should be deleted. Always run Claude Code + `npm run dev` from `E:\ancilar\teamsync`.
 
-🟢 **Milestone 2 (client actions) built.** The client can **Approve** / **Request
-changes** with an optional note via a token-gated server action
-(`app/c/[token]/actions.ts`); the card flips to a read-only outcome after deciding,
-which the freelancer will see. `typecheck` + `lint` + `build` + `npm test` all pass.
+## Status — feature-complete, not yet deployed
 
-🟢 **Repo is live on GitHub:** https://github.com/samarth-bharti/teamsync (public, branch `main`).
+🟢 **Client side (Milestones 1 + 2):** `/c/[token]` renders status, progress, update
+feed, approval items; client can Approve / Request changes + note (token-gated server
+action). Live-verified against Supabase.
 
-🟢 **Day 3 tooling (course Skills/Hooks, authored for this repo):** 3 hooks in
-`.claude/settings.json` — block destructive Bash; run Prettier on Edit/Write; turn-end
-Windows toast — backed by `.claude/hooks/*.ps1`; a `ship-check` skill in
-`.claude/skills/ship-check/`; vitest wired so `npm test` runs. **Hooks verified
-firing live** (blocked an `rm -rf`; auto-Prettier on edits; toast on turn-end).
+🟢 **Freelancer side:** email+password auth (`@supabase/ssr` + `middleware.ts`),
+`/login`, `/dashboard` (list + create project → mints crypto-random share token),
+`/dashboard/[id]` (edit status/progress, post updates, raise approval items, copy
+client link, see client responses). Login verified (account created + confirmed).
 
-⚠️ The app cannot render **live data** until a Supabase project exists and
-`.env.local` is filled (one external step, below).
+🟢 **Supabase live:** `.env.local` filled (base URL, service `sb_secret_` key, public
+anon JWT). `db/schema.sql` + `db/seed.sql` + `db/freelancer.sql` (owner_id + RLS) all
+run. Connection + `owner_id` column verified.
 
-## ⏭️ Action needed from user (to see it live)
+🟢 **Day 3 tooling:** 3 hooks (`.claude/settings.json` → `.claude/hooks/*.ps1`,
+paths updated to E:), `ship-check` skill, vitest. Hooks verified firing live.
 
-1. Create a free Supabase project (https://supabase.com).
-2. In the Supabase **SQL editor**, run `db/schema.sql`, then `db/seed.sql`.
-3. Fill `.env.local` with `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`
-   (Project Settings → API). The file is already created with empty placeholders.
-4. `npm run dev` → open http://localhost:3000/c/demo-aurora
-
-## Confirmed decisions
-
-- **Stack:** Next.js 15 (App Router, TS) + React 19 + Tailwind 3 + Supabase
-  (Postgres) + Vercel. Free tiers only.
-- **Data source:** client view fetches by `share_token` **server-side with the
-  service-role key** (never sent to browser); RLS on with no anon policies.
-- **Client actions:** the no-account client mutates only via token-gated server
-  actions that verify the item belongs to the token's project.
-- **Approach this session:** do the course's Day 3 (Skills/Hooks) + the Git
-  assignment _on_ teamsync, so learning and shipping reinforce each other.
-
-## What's done
-
-- **Milestone 1** — read-only client status page (scaffold, data layer
-  `lib/*`, `app/c/[token]/page.tsx`, components, `db/schema.sql` + `db/seed.sql`).
-- **Milestone 2** — client approve / request-changes: `app/c/[token]/actions.ts`
-  (`decideApproval`, token-gated), interactive `components/ApprovalItemCard.tsx`,
-  `lib/projects.ts` now returns all approvals (pending + resolved), page splits them.
-- **Git/GitHub** — repo initialized, identity set, public GitHub remote, pushed.
-- **Day 3** — 3 hooks + `ship-check` skill + vitest test runner.
+🟢 **GitHub:** https://github.com/samarth-bharti/teamsync (public, `main`), pushed
+through commit `bc9d1d4`. `typecheck` + `lint` + `test` + `build` all green.
 
 ## Next steps
 
-1. **(User)** do the Supabase handoff above; confirm `/c/demo-aurora` renders and
-   that approve / request-changes works end to end on a phone.
-2. **(User, optional)** finish Day 3: install 3 community skills + 1 plugin via `/plugin`.
-3. **Freelancer side** — signup (Supabase Auth) → dashboard → create project → post
-   update → raise approval item → copy the `/c/[token]` link → see client responses.
-   Needs schema change (`owner_id` + RLS) and `@supabase/ssr`.
-4. Deploy to Vercel (real public URL) for the end-to-end test in `task.md`.
+1. **Delete the old OneDrive copy** of the project (first task in the E: session).
+2. **Rotate the Supabase secret key** (user deferred it; the old `sb_secret_` was
+   pasted into a tracked file + logs). Must do before any public deploy. Update
+   `.env.local` after.
+3. **Deploy to Vercel:** import the GitHub repo, set env vars (the 4 in `.env.local`),
+   deploy → real public URL. Then run `task.md`'s 6-step end-to-end check on a phone.
+4. (Optional) finish Day 3: install 3 community skills + 1 plugin via `/plugin`; more
+   git drills (fetch/pull, reset/rm, stash, revert) on a scratch repo.
+
+## Confirmed decisions
+
+- **Stack:** Next.js 15 (App Router, TS) + React 19 + Tailwind 3 + Supabase + Vercel.
+- **Two security worlds:** client = no account, service-role key server-side gated by
+  share token; freelancer = Supabase Auth + RLS (anon key + session cookie).
+- **Login mechanism:** email + password (email-confirmation disabled in Supabase for
+  testing).
+- **Approach:** did the course's Day 3 (Skills/Hooks) + Git assignment _on_ teamsync.
 
 ## Decisions log
 
-- **2026-05-22** — Continuity docs + Claude Code config created.
-- **2026-05-22** — Stack confirmed; milestone split recorded.
-- **2026-05-22** — Built Milestone 1 read-only client view (authored Next.js files
-  directly; create-next-app won't scaffold into a non-empty dir).
-- **2026-05-25** — `git init` + first commit; pushed to public GitHub repo
-  `samarth-bharti/teamsync` (branch `main`); verified remote.
-- **2026-05-25** — Day 3: authored 3 hooks + a `ship-check` skill; wired vitest.
-- **2026-05-25** — Built Milestone 2: client approve / request-changes + optional
-  note. `decideApproval` is token-gated (verifies item→project) via the service-role
-  client; `lib/projects.ts` returns all approvals so the page shows pending +
-  resolved outcomes.
-
-## Open questions for the user
-
-- Freelancer login mechanism — email+password vs magic link — decide when we start
-  the freelancer side (after you've seen the app live).
-- Deploy to Vercel now, or after the freelancer side is built?
+- **2026-05-22** — Continuity docs + config; Milestone 1 built.
+- **2026-05-25** — `git init` + public GitHub repo `samarth-bharti/teamsync`.
+- **2026-05-25** — Day 3: 3 hooks + `ship-check` skill + vitest.
+- **2026-05-25** — Milestone 2: token-gated client approve / request-changes.
+- **2026-05-25** — Freelancer side: auth + dashboard + project detail.
+- **2026-05-25** — Moved project off OneDrive → `E:\ancilar\teamsync` (OneDrive was
+  corrupting `.next`). Fresh `npm install` + build + dev server verified there.
