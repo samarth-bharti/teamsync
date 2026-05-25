@@ -1,0 +1,8 @@
+node_modules
+.next
+out
+build
+package-lock.json
+*.tsbuildinfo
+db/*.sql
+.claude/hooks/*.ps1
