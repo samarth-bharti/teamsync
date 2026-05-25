@@ -27,6 +27,9 @@ export default async function ClientProjectPage({ params }: PageProps) {
   const project = await getProjectByToken(token);
   if (!project) notFound();
 
+  const pending = project.approvals.filter((a) => a.state === "pending");
+  const resolved = project.approvals.filter((a) => a.state !== "pending");
+
   return (
     <main className="mx-auto min-h-screen w-full max-w-xl px-4 py-8 sm:py-12">
       <header className="mb-8">
@@ -43,14 +46,27 @@ export default async function ClientProjectPage({ params }: PageProps) {
         <ProgressBar value={project.progress} />
       </section>
 
-      {project.pendingApprovals.length > 0 ? (
+      {pending.length > 0 ? (
         <section className="mb-8">
           <h2 className="mb-3 text-lg font-semibold text-slate-900">
             Needs your input
           </h2>
           <div className="space-y-3">
-            {project.pendingApprovals.map((item) => (
-              <ApprovalItemCard key={item.id} item={item} />
+            {pending.map((item) => (
+              <ApprovalItemCard key={item.id} item={item} token={token} />
+            ))}
+          </div>
+        </section>
+      ) : null}
+
+      {resolved.length > 0 ? (
+        <section className="mb-8">
+          <h2 className="mb-3 text-lg font-semibold text-slate-900">
+            Your decisions
+          </h2>
+          <div className="space-y-3">
+            {resolved.map((item) => (
+              <ApprovalItemCard key={item.id} item={item} token={token} />
             ))}
           </div>
         </section>
@@ -62,7 +78,7 @@ export default async function ClientProjectPage({ params }: PageProps) {
       </section>
 
       <footer className="border-t border-slate-100 pt-4 text-center text-xs text-slate-400">
-        Shared with you via teamsync · read-only
+        Shared with you via teamsync
       </footer>
     </main>
   );

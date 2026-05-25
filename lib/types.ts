@@ -24,5 +24,6 @@ export interface Project {
   shareToken: string;
   createdAt: string;
   updates: Update[];
-  pendingApprovals: ApprovalItem[];
+  /** All approval items, newest first (pending + resolved). */
+  approvals: ApprovalItem[];
 }

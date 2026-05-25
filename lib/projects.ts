@@ -28,9 +28,9 @@ interface ApprovalItemRow {
 }
 
 /**
- * Load a project (with its updates and pending approval items) by its public share
- * token. Returns null if no project matches. Wrapped in React `cache` so calling it
- * from both `generateMetadata` and the page only hits the DB once per request.
+ * Load a project (with its updates and approval items) by its public share token.
+ * Returns null if no project matches. Wrapped in React `cache` so calling it from
+ * both `generateMetadata` and the page only hits the DB once per request.
  */
 export const getProjectByToken = cache(
   async (token: string): Promise<Project | null> => {
@@ -56,7 +56,6 @@ export const getProjectByToken = cache(
         .from("approval_items")
         .select("id, title, detail, state, client_note, created_at")
         .eq("project_id", projectRow.id)
-        .eq("state", "pending")
         .order("created_at", { ascending: false }),
     ]);
     if (updatesRes.error) throw updatesRes.error;
@@ -70,7 +69,7 @@ export const getProjectByToken = cache(
       body: r.body,
       createdAt: r.created_at,
     }));
-    const pendingApprovals: ApprovalItem[] = itemRows.map((r) => ({
+    const approvals: ApprovalItem[] = itemRows.map((r) => ({
       id: r.id,
       title: r.title,
       detail: r.detail,
@@ -87,7 +86,7 @@ export const getProjectByToken = cache(
       shareToken: projectRow.share_token,
       createdAt: projectRow.created_at,
       updates,
-      pendingApprovals,
+      approvals,
     };
   },
 );
