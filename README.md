@@ -2,7 +2,7 @@ i made changes here last time
 # teamsync
 
 No-login client status pages for freelancers. A client opens a private link
-(`/c/<token>`) — no account, no app — and sees the project's status, progress, the
+(`/c/<token>`) — no account, no app — and sees the project' s status, progress, the
 update feed, and anything that needs their input.
 
 ## Stack
