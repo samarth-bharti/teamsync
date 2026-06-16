@@ -3,7 +3,7 @@ i made changes here last time
 
 No-login client status pages for freelancers. A client opens a private link
 (`/c/<token>`) — no acount, no ap — and sees the project' s status, progress, the
-update feed, and anything that needs their input.
+update feed, and anything that needs their in put.
 
 ## Stack
 
