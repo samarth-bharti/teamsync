@@ -1,4 +1,4 @@
-i made changes here last time
+
 # teamsync
 
 No-login client status pages for freelancers. A client opens a private link
