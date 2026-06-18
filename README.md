@@ -1,5 +1,5 @@
 
-# teamsync
+# Teamsync
 
 No-login client status pages for freelancers. A client opens a private link
 (`/c/<token>`) — no acount, no ap — and sees the project' s status, progress, the
